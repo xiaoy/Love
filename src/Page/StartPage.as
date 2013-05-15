@@ -29,6 +29,7 @@ package Page
 			var moveTo : MoveTo = new MoveTo(fromPos, toPos, 2, words);
 			moveTo.Play();
 		}
+		
 	}
 
 }

@@ -1,5 +1,6 @@
 package  
 {
+	import Configure.ResourceManager;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -29,6 +30,11 @@ package
 				trace("Error:Init twice");
 				return;
 			}
+			addChild(ResourceManager.instance());
+			if (!LoadConfig()) {
+				trace("Load config file failed");
+				return;
+			}
 			// Init the main game layer
 			_isInit = true;
 			_stage = stage;
@@ -53,6 +59,12 @@ package
 		
 		public function getStage() : Stage {
 			return _stage;
+		}
+		
+		private function LoadConfig() : Boolean {
+			// Load Texts.xml
+			ResourceManager.instance().loadRes("http://images6.fanpop.com/image/photos/33600000/beautiful-flowers-flowers-33623954-500-500.jpg");
+			return true;
 		}
 	}
 
