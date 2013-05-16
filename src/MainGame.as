@@ -1,6 +1,7 @@
 package  
 {
 	import Configure.ResourceManager;
+	import Debug.LogInfo;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -30,16 +31,15 @@ package
 				trace("Error:Init twice");
 				return;
 			}
-			addChild(ResourceManager.instance());
-			if (!LoadConfig()) {
-				trace("Load config file failed");
-				return;
-			}
 			// Init the main game layer
 			_isInit = true;
 			_stage = stage;
 			_stage.addChild(this);
 			
+			LoadConfig();
+		}
+		
+		private function startGame() : void {
 			// add first page
 			//var startPage : StartPage = new StartPage();
 			//addChild(startPage);
@@ -47,9 +47,8 @@ package
 			var springPage : SpringPage = new SpringPage();
 			addChild(springPage);
 			
-			_stage.addEventListener(Event.ENTER_FRAME, Update);
+			_stage.addEventListener(Event.ENTER_FRAME, Update);			
 		}
-		
 		public static function instance() : MainGame {
 			if (_instance == null) {
 				_instance = new MainGame();
@@ -62,8 +61,19 @@ package
 		}
 		
 		private function LoadConfig() : Boolean {
-			// Load Texts.xml
-			ResourceManager.instance().loadRes("http://images6.fanpop.com/image/photos/33600000/beautiful-flowers-flowers-33623954-500-500.jpg");
+			// Load SpringPage.xml
+			var url : String = SpringPage.CONFIG_URL + ".xml";
+			ResourceManager.instance().loadRes(url, loadConfigResult);
+			return true;
+		}
+		
+		private function loadConfigResult(ret : Boolean) : Boolean {
+			if (!ret) {
+				LogInfo.warn("Load config files failed");
+				return false;
+			}
+			startGame();
+			LogInfo.log("Load Config files successed");
 			return true;
 		}
 	}

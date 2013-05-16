@@ -30,6 +30,15 @@ package Text
 			textFiled.y -= textFiled.height / 2;
 		}
 		
+		public function initByXml(xml : XMLList) : void {
+			var text : String = xml.toString();
+			var color : int = xml.@color;
+			var fontSize : int = xml.@fontsize;
+			var font : String = xml.@font;
+			this.x = xml.@posX;
+			this.y = xml.@posY;
+			init(fontSize, text, color, font);
+		}
 		public function dispose() : void {
 			removeChild(textFiled);
 			textFiled = null;
