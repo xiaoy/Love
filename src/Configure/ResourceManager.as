@@ -72,15 +72,8 @@ package Configure
 			}
 			return _instance;
 		}
-		public function getXmlConfig(url : String) : XML {
-			//var xml : XML = null;
-			//for (var key : String in _loadedResDic) {
-				//if (key == url) {
-					//xml = _loadedResDic[key] as XML;
-					//break;
-				//}
-			//}
-			return new XML(_loadedResDic[url]);
+		public function getResourceData(url : String) : *{
+			return _loadedResDic[url];
 		}
 		public function dispose() : void {
 			_loadedResDic = null;
