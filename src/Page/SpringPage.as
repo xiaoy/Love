@@ -8,12 +8,14 @@ package Page
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.geom.PerspectiveProjection;
 	import flash.geom.Point;
 	import flash.globalization.StringTools;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.utils.Timer;
 	import Text.Word;
+	import Utility.Tween;
 	/**
 	 * ...
 	 * @author lfwu
@@ -23,7 +25,10 @@ package Page
 		public static const CONFIG_URL : String = "Res/Configs/SpringPage";
 		private var _configXml : XML = null;
 		private var _imagesCount : int = 0;
+		private var _timer : Timer = null;
 		private var _imagesArr : Array = new Array();
+		private	var _text : Word = new Word();
+		private var _imageTitle : Word = new Word();
 		private var _lastDisplay : DisplayObject = null;
 		public function SpringPage() 
 		{
@@ -40,10 +45,22 @@ package Page
 			title.initByXml(titleXml);
 			addChild(title);
 		
-			var textXml : XMLList = pageXml.Text;
-			var text : Word = new Word();
-			text.initByXml(textXml);
-			addChild(text);
+			//var textXml : XMLList = pageXml.Text;
+			//_text.initByXml(textXml);
+			//addChild(_text);
+			
+			_imageTitle.init(24, "", 0x00ff00, "Arial");
+			_imageTitle.x = 400;
+			_imageTitle.y = 100;
+			addChild(_imageTitle);
+			var alphaTimer : Timer = Tween.delayCall(100, function easyAlpha() : void {
+				title.alpha -= 0.1;
+				if (title.alpha <= 0) {
+					alphaTimer.stop();
+					var event : TimerEvent = new TimerEvent(TimerEvent.TIMER_COMPLETE);
+					alphaTimer.dispatchEvent(event);
+				}
+			});
 			
 			var imagesXml : XMLList = pageXml.Images;
 			for each(var imageXml : XML in imagesXml.*) {
@@ -54,24 +71,46 @@ package Page
 				loader.load(new URLRequest(path));
 				loader.x = imagesXml.@posX;
 				loader.y = imagesXml.@posY;
+				loader.visible = false;
+				var obj : Object = new Object();
+				obj.img = loader;
+				var words : Word = new Word();
+				words.init(24, imageXml.toString(), 0x00ff00, "Arial");
+				obj.text = words;
+				_imagesArr.push(obj);
+
 			}
-			var timer : Timer = new Timer(imagesXml.@delay * 1000);
-			timer.addEventListener(TimerEvent.TIMER, Update);
-			timer.start();
+			//_timer = new Timer(imagesXml.@delay * 1000);
+			//_timer.addEventListener(TimerEvent.TIMER, Update);
+			//_timer.start();
 			//_imagesCount = imagesXml.length;
 		}
 		
 		private function loadImagesHandle(e : Event) : void {
 			var targetLoader : Loader = e.currentTarget.loader as Loader;
 			targetLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, loadImagesHandle);
-			_imagesArr.push(targetLoader);
 			addChild(targetLoader);
-			if (_imagesArr.length == 1) {
-				targetLoader.visible = true;
-				_imagesCount += 1;
-				_lastDisplay = targetLoader;
-			}else {
-				targetLoader.visible = false;
+			//if (_imagesCount == 0) {
+				//setModelVisible(_imagesCount, true);
+				//_imagesCount += 1;
+			//}
+			_imagesCount += 1;
+			if (_imagesCount == _imagesArr.length) {
+				_imagesCount -= 1;
+				createCard();
+				function createCard() : void {
+					var obj : Object = _imagesArr[_imagesCount];
+					var card : CardPage = new CardPage(obj.text, obj.img);
+					addChild(card);
+					card.play(20, callback);			
+				}
+
+				function callback() : void {
+					_imagesCount -= 1;
+					if (_imagesCount >= 0) {
+						createCard();
+					}
+				}
 			}
 		}
 		
@@ -81,14 +120,21 @@ package Page
 			}
 			if (_imagesCount >= _imagesArr.length) {
 				_imagesCount = 0;
+				_timer.stop();
 			}
 			if (_lastDisplay != null) {
 				_lastDisplay.visible = false;
 			}
-			var dispaly : DisplayObject = _imagesArr[_imagesCount];
-			dispaly.visible = true;
-			_lastDisplay = dispaly;
+			_text.visible = false;
+			setModelVisible(_imagesCount, true);
 			_imagesCount += 1;
+		}
+		
+		private function setModelVisible(index : int, visible : Boolean) : void {
+			_imageTitle.setText(_imagesArr[index].text);
+			var dispaly : DisplayObject = _imagesArr[index].img;
+			dispaly.visible = visible;		
+			_lastDisplay = dispaly;
 		}
 		
 	}

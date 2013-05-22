@@ -11,6 +11,7 @@ package Text
 	public class Word extends Sprite
 	{
 		private var textFiled : TextField = null;
+		private	var textFormat : TextFormat = new TextFormat();
 		public function Word() 
 		{
 			
@@ -19,12 +20,11 @@ package Text
 		public function init(size : int, text : String, color : int, font : String = null) : void {
 			textFiled = new TextField();
 			textFiled.text = text;
-			textFiled.autoSize = TextFieldAutoSize.LEFT;
-			var textFormat : TextFormat = new TextFormat();
-			textFormat.font = font;
-			textFormat.size = size;
-			textFormat.color = color;
-			textFiled.setTextFormat(textFormat);
+			textFiled.autoSize = TextFieldAutoSize.CENTER;
+			setTextFont(font);
+			setTextSize(size);
+			setTextColor(color);
+			updateText();
 			addChild(textFiled);
 			textFiled.x -= textFiled.width / 2;
 			textFiled.y -= textFiled.height / 2;
@@ -39,9 +39,37 @@ package Text
 			this.y = xml.@posY;
 			init(fontSize, text, color, font);
 		}
+		
+		public function setText(text : String) : void {
+			textFiled.text = text;
+			updateText();
+		}
+		
 		public function dispose() : void {
 			removeChild(textFiled);
 			textFiled = null;
+		}
+		
+		private function updateText() : void {
+			textFiled.setTextFormat(textFormat);
+		}
+		
+		public function setTextFont(font : String) : void
+		{
+			textFormat.font = font;
+			updateText();
+		}
+		
+		public function setTextSize(size : int):void 
+		{
+			textFormat.size = size;
+			updateText();
+		}
+		
+		public function setTextColor(color : int):void 
+		{
+			textFormat.color = color;
+			updateText();
 		}
 		
 	}
