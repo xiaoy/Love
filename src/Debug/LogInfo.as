@@ -21,7 +21,7 @@ package Debug
 		}
 		
 		public static function log(info : String) : void {
-			trace("Log:" + log);
+			trace("Log:" + info);
 		}
 	}
 

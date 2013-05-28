@@ -1,6 +1,5 @@
 package Page 
 {
-	import Configure.ResourceManager;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -14,6 +13,7 @@ package Page
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.utils.Timer;
+	import Loader.BaseLoader;
 	import Text.Word;
 	import Utility.Tween;
 	/**
@@ -32,8 +32,11 @@ package Page
 		private var _lastDisplay : DisplayObject = null;
 		public function SpringPage() 
 		{
-			_configXml = new XML(ResourceManager.instance().getResourceData(CONFIG_URL));
-			init();
+			var loader : BaseLoader = new BaseLoader("SpringPage.xml", function loadRet(data : Object) : void {
+				_configXml = new XML(data[CONFIG_URL + ".xml"]);
+				init();
+			});
+			loader.load();
 		}
 		
 		

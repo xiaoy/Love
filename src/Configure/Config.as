@@ -8,6 +8,9 @@ package Configure
 	 */
 	public class Config 
 	{
+		public static const ASSERT_CONFIG : String = "Res/Configs/";
+		public static const ASSRET_IMAGES : String = "Res/Images/";
+		public static const ASSERT_SOUND : String = "Res/Sounds/";
 		private static var _stage : Stage = MainGame.instance().getStage();
 		public function Config() 
 		{

@@ -1,12 +1,20 @@
 package  
 {
-	import Configure.ResourceManager;
+	import Configure.Config;
+	import Configure.ConfigManager;
 	import Debug.LogInfo;
+	import flash.display.Bitmap;
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.geom.PerspectiveProjection;
+	import flash.utils.ByteArray;
+	import Loader.BaseLoader;
 	import Page.SpringPage;
 	import Page.StartPage;
+	import Sound.SoundManager;
 	/**
 	 * ...
 	 * @author lfwu
@@ -35,8 +43,9 @@ package
 			_isInit = true;
 			_stage = stage;
 			_stage.addChild(this);
-			
+			SoundManager.instance().play(Config.ASSERT_SOUND + "sunshine.mp3");
 			LoadConfig();
+			
 		}
 		
 		private function startGame() : void {
@@ -62,17 +71,19 @@ package
 		
 		private function LoadConfig() : Boolean {
 			// Load SpringPage.xml
-			var url : String = SpringPage.CONFIG_URL + ".xml";
-			ResourceManager.instance().loadRes(url, loadConfigResult);
+			//loadConfigResult();
+			var page : SpringPage = new SpringPage();
+			addChild(page);
 			return true;
 		}
 		
-		private function loadConfigResult(ret : Boolean) : Boolean {
+		private function loadConfigResult(ret : Boolean = true) : Boolean {
 			if (!ret) {
 				LogInfo.warn("Load config files failed");
 				return false;
 			}
-			startGame();
+			ConfigManager.instance().Init(function callBack() : void {});
+			//startGame();
 			LogInfo.log("Load Config files successed");
 			return true;
 		}

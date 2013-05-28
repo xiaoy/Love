@@ -17,8 +17,8 @@ package Page
 		
 		public function CardPage(title : Word, display : DisplayObject) 
 		{
-			display.x = Config.getSceneWidth() - display.width;
-			display.y = Config.getSceneHeight() - display.height;
+			display.x = Config.getSceneWidth()/2 - 250;
+			display.y = Config.getSceneHeight()/2 - 175;
 			display.visible = true;
 			addChild(display);
 			
