@@ -14,28 +14,34 @@ package Page
 	 */
 	public class CardPage extends Sprite
 	{
+		private var _title : Word = null;
+		private var _display : DisplayObject = null;
 		
 		public function CardPage(title : Word, display : DisplayObject) 
 		{
-			display.x = Config.getSceneWidth()/2 - 250;
-			display.y = Config.getSceneHeight()/2 - 175;
-			display.visible = true;
-			addChild(display);
+			_display = display;
+			_display.x = Config.getSceneWidth()/2 - 250;
+			_display.y = Config.getSceneHeight()/2 - 175;
+			addChild(_display);
 			
-			title.x = 400;
-			title.y = 100;
-			addChild(title);
+			_title = title;
+			_title.x = 0;
+			_title.y = 100;
+			addChild(_title);
 		}
 		
 		public function play(delay : int, callBack : Function) : void {
 			var timer : Timer = Tween.delayCall(delay, function Tick() : void {
-				alpha -= 0.01;
-				if (alpha <= 0) {
+				if (_title.x > Config.getSceneWidth() / 2) {
+					_display.alpha -= 0.01;
+				}else {
+					_title.x += 2;					
+				}
+				if (_display.alpha <= 0) {
 					timer.stop();
 					var event : TimerEvent = new TimerEvent(TimerEvent.TIMER_COMPLETE);
 					timer.dispatchEvent(event);
 					callBack();
-					//this.parent.removeChild(this);
 				}
 			});
 		}

@@ -21,18 +21,12 @@ package Configure
 		
 		private var _configDic : Dictionary = null;
 		private var _resDic : Dictionary = null;
-		private var _waitingLoadArr : Array = null;
 		private var _callBack : Function = null;
-		private var _isLoading : Boolean = false;
-		private var _timer : Timer = null;
-		
+		private var _resCount : int = 0;
 		public function ConfigManager() 
 		{
 			_configDic = new Dictionary();
 			_resDic = new Dictionary();
-			_waitingLoadArr = new Array();
-			_timer = new Timer(0.1, 0);
-			_timer.addEventListener(TimerEvent.TIMER, loadImageRes);
 		}
 		
 		public static function instance() : ConfigManager {
@@ -44,42 +38,27 @@ package Configure
 		
 		public function Init(callBack : Function) : void {
 			_callBack = callBack;
-			var loader : BaseLoader = new BaseLoader("Images.xml", function loadRet(data : Object) : void {
-				var url : String = Config.ASSERT_CONFIG + "Images.xml";
-				var xml : XML = new XML(data[url]);
+			var loader : BaseLoader = new BaseLoader("Resource.xml", function loadRet(data : *) : void {
+				var xml : XML = new XML(data);
+				_resCount = xml.children().length();
 				for each(var xmlList : XML in xml.*) {
 					var imageUrl : String = xmlList[0];
-					_waitingLoadArr.push(imageUrl);
-					if (_waitingLoadArr.length == 1) {
-						_timer.start();						
-					}
+					var key : String = imageUrl.slice(0, imageUrl.indexOf("."));
+					var res : Resource = new Resource(imageUrl, loadImageRes);
+					_resDic[key] = res;
 				}
 			});
 			loader.load();
 		}
 		
-		private function loadImageRes(e : Event) : void {
-			if (_waitingLoadArr.length == 0 && !_isLoading) {
-				// stop
-				_timer.stop();
-				_timer.removeEventListener(TimerEvent.TIMER, loadImageRes);
-				return;
+		private function loadImageRes() : void {
+			_resCount -= 1;
+			if (_resCount == 0) {
+				_callBack();
 			}
-			
-			if (_isLoading) {
-				return;
-			}
-			var path : String = _waitingLoadArr[0] + ".png";
-			var url : String = Config.ASSRET_IMAGES + path;
-			var loader : BaseLoader = new BaseLoader(path, function loadRet(obj : Object) : void {
-				_waitingLoadArr = _waitingLoadArr.splice(0, 1);
-				_isLoading = false;
-				_resDic[url] = obj.url;
-			});
-			loader.load();
 		}
 		public function getResData(url : String) : * {
-			return _resDic[url];
+			return _resDic[url].getData();
 		}
 		
 		public function getConfig(key : String) : * {

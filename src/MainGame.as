@@ -49,15 +49,18 @@ package
 		}
 		
 		private function startGame() : void {
-			// add first page
-			//var startPage : StartPage = new StartPage();
-			//addChild(startPage);
-			
-			var springPage : SpringPage = new SpringPage();
-			addChild(springPage);
-			
 			_stage.addEventListener(Event.ENTER_FRAME, Update);			
+
+			// add first page
+			var startPage : StartPage = new StartPage(addSpringPage);
+			addChild(startPage);
 		}
+		
+		private function addSpringPage() : void {
+			var springPage : SpringPage = new SpringPage(null);
+			addChild(springPage);			
+		}
+		
 		public static function instance() : MainGame {
 			if (_instance == null) {
 				_instance = new MainGame();
@@ -70,21 +73,16 @@ package
 		}
 		
 		private function LoadConfig() : Boolean {
-			// Load SpringPage.xml
-			//loadConfigResult();
-			var page : SpringPage = new SpringPage();
-			addChild(page);
+			LogInfo.log("Start Load config files");
+			ConfigManager.instance().Init(function callBack() : void {
+				loadConfigResult();
+				LogInfo.log("Load config file success");
+			});
 			return true;
 		}
 		
-		private function loadConfigResult(ret : Boolean = true) : Boolean {
-			if (!ret) {
-				LogInfo.warn("Load config files failed");
-				return false;
-			}
-			ConfigManager.instance().Init(function callBack() : void {});
-			//startGame();
-			LogInfo.log("Load Config files successed");
+		private function loadConfigResult() : Boolean {
+			startGame();
 			return true;
 		}
 	}
