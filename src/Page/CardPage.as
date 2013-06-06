@@ -1,11 +1,11 @@
 package Page 
 {
+	import Animate.EasyAphla;
+	import Animate.MoveTo;
 	import Configure.Config;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	import flash.events.TimerEvent;
 	import flash.geom.Point;
-	import flash.utils.Timer;
 	import Text.Word;
 	import Utility.Tween;
 	/**
@@ -16,6 +16,7 @@ package Page
 	{
 		private var _title : Word = null;
 		private var _display : DisplayObject = null;
+		private var _callBack : Function = null;
 		
 		public function CardPage(title : Word, display : DisplayObject) 
 		{
@@ -30,20 +31,22 @@ package Page
 			addChild(_title);
 		}
 		
-		public function play(delay : int, callBack : Function) : void {
-			var timer : Timer = Tween.delayCall(delay, function Tick() : void {
-				if (_title.x > Config.getSceneWidth() / 2) {
-					_display.alpha -= 0.01;
-				}else {
-					_title.x += 2;					
-				}
-				if (_display.alpha <= 0) {
-					timer.stop();
-					var event : TimerEvent = new TimerEvent(TimerEvent.TIMER_COMPLETE);
-					timer.dispatchEvent(event);
-					callBack();
+		public function play(callBack : Function) : void {
+			_callBack = callBack;
+			var targetPos : Point = new Point(Config.getSceneWidth() / 2, _title.y);
+			var moveTo : MoveTo = new MoveTo(targetPos, 5, _title, function moveToHandle() : void {
+				hide();
+			});
+			moveTo.Play();
+		}
+		
+		private function hide() : void {
+			var alphaTo : EasyAphla = new EasyAphla(_display, 5, 0.1, function alphaTo() : void {
+				if (_callBack != null) {
+					_callBack();
 				}
 			});
+			alphaTo.play();
 		}
 	}
 

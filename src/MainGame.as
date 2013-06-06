@@ -53,13 +53,15 @@ package
 
 			// add first page
 			var startPage : StartPage = new StartPage(addSpringPage);
-			addChild(startPage);
+			addChild(startPage); 
+			function addSpringPage() : void {
+				removeChild(startPage);
+				var springPage : SpringPage = new SpringPage(null);
+				addChild(springPage);			
+			}
 		}
 		
-		private function addSpringPage() : void {
-			var springPage : SpringPage = new SpringPage(null);
-			addChild(springPage);			
-		}
+
 		
 		public static function instance() : MainGame {
 			if (_instance == null) {

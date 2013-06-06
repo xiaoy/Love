@@ -1,5 +1,6 @@
 package Page 
 {
+	import Animate.EasyAphla;
 	import Configure.ConfigManager;
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
@@ -41,18 +42,17 @@ package Page
 			title.initByXml(titleXml);
 			addChild(title);
 			
+			var easyAlpha : EasyAphla = new EasyAphla(title, 5, 0.1, function callBack() : void {
+				removeChild(title);
+			});
+			easyAlpha.play();
+			
 			_imageTitle.init(24, "", 0x00ff00, "Arial");
 			_imageTitle.x = 400;
 			_imageTitle.y = 100;
 			addChild(_imageTitle);
-			var alphaTimer : Timer = Tween.delayCall(100, function easyAlpha() : void {
-				title.alpha -= 0.1;
-				if (title.alpha <= 0) {
-					alphaTimer.stop();
-					var event : TimerEvent = new TimerEvent(TimerEvent.TIMER_COMPLETE);
-					alphaTimer.dispatchEvent(event);
-				}
-			});
+			
+
 			
 			var imagesXml : XMLList = pageXml.Images;
 			for each(var imageXml : XML in imagesXml.*) {
@@ -87,7 +87,7 @@ package Page
 			var obj : Object = _imagesArr[index];
 			var card : CardPage = new CardPage(obj.text, obj.img);
 			addChild(card);
-			card.play(40, createCard);			
+			card.play(createCard);			
 			_lastDisplay = card;
 			_imagesArr.splice(index, 1);
 		}
